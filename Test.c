@@ -7,7 +7,14 @@
 #include <netinet/in.h>
 #include <netdb.h> 
 #include <errno.h>
+
+#ifndef CONNECT4_H
+#define CONNECT4_H
+
 #include "connect4.h"
+
+#endif /* CONNECT4_H */
+
 
 #define BUFSIZE 1024
 typedef struct sockaddr SA;

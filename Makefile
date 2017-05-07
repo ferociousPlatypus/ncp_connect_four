@@ -4,7 +4,7 @@ CFLAGS = -Wall -g
 OBJS = connect4.o main.o
 
 
-all: game server main
+all: game server main client
 
 game: $(OBJS)
 
@@ -16,10 +16,13 @@ main.o: main.c
 
 server: server.c
 	$(CC) $(CFLAGS) server.c -o server
+	
+client: Test.c
+	$(CC) $(CFLAGS) Test.c -o client
 
 main: connect4.c main.c
 	$(CC) $(CFLAGS) $(OBJS) -o run
 
 clean:
-	rm -f *~ *.o run server
+	rm -f *~ *.o run server client
 	rm -rf *.dSYM
