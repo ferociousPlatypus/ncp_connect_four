@@ -13,7 +13,7 @@
 #include <arpa/inet.h>
 #include <signal.h>
 
-#define PACKET_SIZE 1
+#define PACKET_SIZE 2
 
 struct thread_data{
     int onefd, twofd;   //two player fd

@@ -114,12 +114,16 @@ int main(int argc,char** argv)
     
     initiate_game();
     //mimicServer("p2",clientfd);
-    bzero(buf, BUFSIZE);
-	n = read(clientfd, buf, BUFSIZE);
-	if (n < 0) {
-		error("ERROR reading from socket");
-	}
-	printf("Echo from server: %s\n", buf);
+    do{
+		bzero(buf, BUFSIZE);
+		n = read(clientfd, buf, BUFSIZE);
+		if (n < 0) {
+			error("ERROR reading from socket");
+		}
+		sleep(5);
+	}while( n == 0);
+	printf("Echo from server: %s\n\n PlayerNumber : %c\n\n", buf,buf[1]);
+	
 
     
     if(strncmp(buf,"p1",2) == 0)
@@ -150,6 +154,7 @@ int main(int argc,char** argv)
 		n = write(clientfd, buf, strlen(buf));
 		if (n < 0) 
 		  error("ERROR writing to socket");
+		printf("\n\n Sent to Server : %c \n\n",buf[0]);
 		  
 		  
 		// Get 2nd player movment.  
@@ -194,6 +199,7 @@ int main(int argc,char** argv)
 			n = write(clientfd, buf, strlen(buf));
 			if (n < 0) 
 			  error("ERROR writing to socket");
+			printf("\n\n Sent to Server : %c \n\n",buf[0]);
 			
     	}while(winner <= 0);
     
