@@ -102,15 +102,15 @@ void *execute(void *thread_arg){
 
     do{
         if(player == 1){
-            buf = read(onefd, buf, PACKET_SIZE);
+            read(onefd, buf, PACKET_SIZE);
             write(twofd, buf, PACKET_SIZE);
         }
         else{
-            buf = read(twofd, buf, PACKET_SIZE);
+            read(twofd, buf, PACKET_SIZE);
             write(onefd, buf, PACKET_SIZE);
         }
     }
-    while()
+    while(1);        // fix this
 
     return NULL;
 }
