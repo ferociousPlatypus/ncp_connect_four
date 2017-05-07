@@ -92,12 +92,12 @@ void *execute(void *thread_arg){
         char* buf = malloc(PACKET_SIZE * sizeof(char));
 
         if(player == 1){
-            write(onefd,'1', PACKET_SIZE);
-            write(twofd, '2', PACKET_SIZE);
+            write(onefd,"p1", PACKET_SIZE);
+            write(twofd, "p2", PACKET_SIZE);
         }
         else{
-            write(onefd,'2', PACKET_SIZE);
-            write(twofd, '1', PACKET_SIZE);
+            write(onefd,"p2", PACKET_SIZE);
+            write(twofd, "p1", PACKET_SIZE);
         }
 
     do{
