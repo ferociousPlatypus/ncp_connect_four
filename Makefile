@@ -18,7 +18,7 @@ server: server.c
 	$(CC) $(CFLAGS) server.c -o server
 	
 client: Test.c
-	$(CC) $(CFLAGS) Test.c -o client
+	$(CC) $(CFLAGS) Test.c connect4.c -o client
 
 main: connect4.c main.c
 	$(CC) $(CFLAGS) $(OBJS) -o run
