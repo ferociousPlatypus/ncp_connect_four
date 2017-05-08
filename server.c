@@ -110,6 +110,7 @@ void *execute(void *thread_arg){
             read(twofd, buf, PACKET_SIZE);
             write(onefd, buf, PACKET_SIZE);
         }
+        player = (player == 1)?2:1;
     }
     while(1);        // fix this
 
