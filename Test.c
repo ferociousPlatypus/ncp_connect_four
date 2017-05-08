@@ -157,6 +157,7 @@ int main(int argc,char** argv)
 			printf( " Value : %c " , buf[0]);
 			if(buf[0] == 'q'){
 				printf("User Quit\n");
+				winner = 3 - playernumber;
 				break;
 			}
 
@@ -179,6 +180,11 @@ int main(int argc,char** argv)
 				printf("Timeout!\n");
 				timeout = 1;
 				break;								// handle timeout better
+			}
+			if(buf[0] == 'q'){
+					printf("other user quit!\n");
+					winner = playernumber;
+					break;								// handle timeout better
 			}
 
 			if (n < 0) 
@@ -204,6 +210,12 @@ int main(int argc,char** argv)
 					timeout = 1;
 					break;								// handle timeout better
 				}
+				
+				if(buf[0] == 'q'){
+					printf("other user quit!\n");
+					winner = playernumber;
+					break;								// handle timeout better
+				}
 
 				if (n < 0) 
 				  error("ERROR reading from socket");
@@ -221,6 +233,7 @@ int main(int argc,char** argv)
 					bzero(buf, BUFSIZE);
 					fgets(buf, BUFSIZE, stdin);
 					if(buf[0] == 'q'){
+						winner = 3 - playernumber;
 						printf("User Quit\n");
 						break;
 					}
