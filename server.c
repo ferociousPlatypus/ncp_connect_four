@@ -12,6 +12,8 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <signal.h>
+#include <errno.h>
+#include <sys/select.h>
 
 #define PACKET_SIZE 2
 
@@ -102,6 +104,18 @@ void *execute(void *thread_arg){
         }
 
     do{
+        struct timeval time_out = {10, 0};
+        fd_set readset;
+        FD_ZERO(&readset);
+        FD_SET(onefd,&readset);
+        FD_SET(twofd,&readset);
+        if(select(128, &readset, NULL, NULL, &time_out) == 0){
+            printf("Timeout\n");
+            buf = "t\0";
+            send(onefd, buf, PACKET_SIZE, 0);
+            send(twofd, buf, PACKET_SIZE, 0);
+            break;
+        }
         if(player == 1){
             recv(onefd, buf, PACKET_SIZE, 0);
             send(twofd, buf, PACKET_SIZE, 0);

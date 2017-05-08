@@ -7,6 +7,7 @@
 #include <netinet/in.h>
 #include <netdb.h> 
 #include <errno.h>
+#include <signal.h>
 
 #ifndef CONNECT4_H
 #define CONNECT4_H
@@ -15,6 +16,7 @@
 
 #endif /* CONNECT4_H */
 
+int clientfd = 0;
 
 #define BUFSIZE 1024
 typedef struct sockaddr SA;
@@ -28,16 +30,21 @@ char charCol;
 int playernumber = -1;
 char buf[BUFSIZE];
 
+void sig_handler(int signum){
+	printf("\nExiting Now\n");
+	close(clientfd);
+	exit(0);
+}
 
 void error(char *msg) {
     perror(msg);
     exit(0);
 }
 
-void mimicServer(char* msg,int clientfd){
+void mimicServer(char* msg,int fd){
 	int n;
     /* send the message line to the server */
-    n = write(clientfd, msg, strlen(msg));
+    n = write(fd, msg, strlen(msg));
     if (n < 0) 
       error("ERROR writing to socket");
     
@@ -46,11 +53,11 @@ void mimicServer(char* msg,int clientfd){
 
 int open_clientfd(char *hostname, int port) 
 {
-    int clientfd;
+    int fd;
     struct hostent *hp;
     struct sockaddr_in serveraddr;
 
-    if ((clientfd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+    if ((fd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
 	return -1; /* check errno for cause of error */
 
     /* Fill in the server's IP address and port */
@@ -63,9 +70,9 @@ int open_clientfd(char *hostname, int port)
     serveraddr.sin_port = htons(port);
 
     /* Establish a connection with the server */
-    if (connect(clientfd, (SA *) &serveraddr, sizeof(serveraddr)) < 0)
+    if (connect(fd, (SA *) &serveraddr, sizeof(serveraddr)) < 0)
 	return -1;
-    return clientfd;
+    return fd;
 }
 void initiate_game(){
 	new_game(&test);
@@ -87,7 +94,8 @@ int gameFrame(){
 
 int main(int argc,char** argv)
 {
-    int n;
+	
+    int n, timeout = 0;
     /* Check arguments */
     if (argc != 3) {
 	fprintf(stderr, "Usage: %s <host name> <port number>\n", argv[0]);
@@ -99,6 +107,7 @@ int main(int argc,char** argv)
 
 	do{
 		int clientfd = open_clientfd(argv[1],port);
+		signal(SIGINT, sig_handler);
 		if(clientfd == -1)
 		{
 		    char msg[BUFSIZE];
@@ -161,6 +170,12 @@ int main(int argc,char** argv)
 			/* print the server's reply */
 			bzero(buf, BUFSIZE);
 			n = read(clientfd, buf, BUFSIZE);
+			if(strcasecmp(&buf[0], "t") == 0){
+				printf("Timeout!\n");
+				timeout = 1;
+				break;								// handle timeout better
+			}
+
 			if (n < 0) 
 			  error("ERROR reading from socket");
 			//printf("Echo from server: %s\n", buf);
@@ -178,6 +193,13 @@ int main(int argc,char** argv)
 				
 				bzero(buf, BUFSIZE);
 				n = read(clientfd, buf, BUFSIZE);
+
+				if(strcasecmp(&buf[0], "t") == 0){
+					printf("Timeout!\n");
+					timeout = 1;
+					break;								// handle timeout better
+				}
+
 				if (n < 0) 
 				  error("ERROR reading from socket");
 				//printf("Echo from server: %s\n", buf);
@@ -206,16 +228,18 @@ int main(int argc,char** argv)
 		
 		}
 		
-		printf("Winner: Player %i\n", winner);
-		if(winner == playernumber)
-			printf("You Win");
-		else
-			printf("You Lose");
-
+		if(timeout == 0){
+				printf("Winner: Player %i\n", winner);
+				if(winner == playernumber)
+					printf("You Win");
+				else
+					printf("You Lose");
+		}
+	
 		write(clientfd,"q", 2);
 		close(clientfd);
 	
-		printf("\n\n\nEnter \'Y\' or \'y\' to start another match \n\n\n");
+		printf("\n\nEnter \'Y\' or \'y\' to start another match\nor any other key to exit\n\n");
 		bzero(buf, BUFSIZE);
 		fgets(buf, BUFSIZE, stdin);
 	}while(buf[0] == 'Y' || buf[0] == 'y');
