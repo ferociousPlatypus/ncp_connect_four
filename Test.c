@@ -269,8 +269,5 @@ int main(int argc,char** argv)
 		fgets(buf, BUFSIZE, stdin);
 	}while(buf[0] == 'Y' || buf[0] == 'y');
 
-		
-	
-	
     return 0;
 }
