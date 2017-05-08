@@ -1,10 +1,10 @@
 # ncp_connect_four
 
 To Compile:
-  make
+>make
   
 To run Server:
-  ./server
+>./server
   
 To run client:
-  ./client <hostname of server> <port on server>
+>./client [hostname of server] [port on server]

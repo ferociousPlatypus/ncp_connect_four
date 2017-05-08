@@ -93,22 +93,22 @@ void *execute(void *thread_arg){
         char* buf = malloc(PACKET_SIZE * sizeof(char));
 
         if(player == 1){
-            write(onefd,"p1", PACKET_SIZE);
-            write(twofd, "p2", PACKET_SIZE);
+            send(onefd,"p1", PACKET_SIZE, 0);
+            send(twofd, "p2", PACKET_SIZE, 0);
         }
         else{
-            write(onefd,"p2", PACKET_SIZE);
-            write(twofd, "p1", PACKET_SIZE);
+            send(onefd,"p2", PACKET_SIZE, 0);
+            send(twofd, "p1", PACKET_SIZE, 0);
         }
 
     do{
         if(player == 1){
-            read(onefd, buf, PACKET_SIZE);
-            write(twofd, buf, PACKET_SIZE);
+            recv(onefd, buf, PACKET_SIZE, 0);
+            send(twofd, buf, PACKET_SIZE, 0);
         }
         else{
-            read(twofd, buf, PACKET_SIZE);
-            write(onefd, buf, PACKET_SIZE);
+            recv(twofd, buf, PACKET_SIZE, 0);
+            send(onefd, buf, PACKET_SIZE, 0);
         }
         player = (player == 1)?2:1;
     }

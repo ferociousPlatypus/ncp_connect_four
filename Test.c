@@ -89,16 +89,16 @@ int main(int argc,char** argv)
 {
     int n;
     /* Check arguments */
-    if (argc != 2) {
-	fprintf(stderr, "Usage: %s <port number>\n", argv[0]);
+    if (argc != 3) {
+	fprintf(stderr, "Usage: %s <host name> <port number>\n", argv[0]);
 	exit(0);
     }
-    
+
     //assigning port to 2nd argument 
-    int port = atoi(argv[1]);
+    int port = atoi(argv[2]);
 
 	do{
-		int clientfd = open_clientfd("localhost",port);
+		int clientfd = open_clientfd(argv[1],port);
 		if(clientfd == -1)
 		{
 		    char msg[BUFSIZE];
@@ -108,7 +108,7 @@ int main(int argc,char** argv)
 		}
 		if(clientfd == -2)
 		{
-		    printf("Invalid hostname");
+		    printf("Invalid hostname\n");
 		    exit(0);
 		}
 		
