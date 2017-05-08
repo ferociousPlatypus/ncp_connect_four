@@ -207,6 +207,12 @@ int main(int argc,char** argv)
 		}
 		
 		printf("Winner: Player %i\n", winner);
+		if(winner == playernumber)
+			printf("You Win");
+		else
+			printf("You Lose");
+
+		write(clientfd,"q", 2);
 		close(clientfd);
 	
 		printf("\n\n\nEnter \'Y\' or \'y\' to start another match \n\n\n");
