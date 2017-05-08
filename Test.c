@@ -134,7 +134,7 @@ int main(int argc,char** argv)
 		{
 			playernumber = 2;
 		}
-		printf("Your PlayerNumber : %i \n", playernumber);
+		printf("You're PlayerNumber : %i \n", playernumber);
 		
 		if(playernumber == 1)
 		{
