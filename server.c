@@ -27,17 +27,16 @@ typedef struct thread_data thread_data;
 
 typedef struct sockaddr SA;
 
-void sig_handler(int signum);
-void error_exit(char* str);
+void sig_handler(int signum);   // handles exiting program
+void error_exit(char* str);     // error checking function
 int create_socket(int port);
-// int connect_socket(SA *clientAddr, int clientLen);
 int get_rand_num(void);
-void *execute(void *thread_arg);
+void *execute(void *thread_arg);    //act as proxy server between two clients
 
 int def_socket;
 
 int main(int argc, char **argv){
-    signal(SIGINT, sig_handler);    // terminate program - maybe...
+    signal(SIGINT, sig_handler);    // terminate program
 
     if(argc != 2){
         printf("Error Enter Port Number!");
@@ -64,7 +63,7 @@ int main(int argc, char **argv){
         else
             td->player = 2;
         
-        int pid = fork();
+        int pid = fork();   // fork to handle game between two 
         if(pid == 0){
             execute(td);
             return 0;
@@ -82,7 +81,6 @@ void *execute(void *thread_arg){
     int onefd, twofd, player;
     struct sockaddr_in oneAddr, twoAddr;
     socklen_t oneLen, twoLen;
-
     onefd = my_data->onefd;                 
     oneLen = my_data->oneLen;
     memcpy(&oneAddr, &my_data->oneAddr, sizeof(struct sockaddr_in));
@@ -92,24 +90,25 @@ void *execute(void *thread_arg){
     player = my_data->player;
  
     printf("Connected\n");
-        char* buf = malloc(PACKET_SIZE * sizeof(char));
+    char* buf = malloc(PACKET_SIZE * sizeof(char));
 
-        if(player == 1){
-            send(onefd,"p1", PACKET_SIZE, 0);
-            send(twofd, "p2", PACKET_SIZE, 0);
-        }
-        else{
-            send(onefd,"p2", PACKET_SIZE, 0);
-            send(twofd, "p1", PACKET_SIZE, 0);
-        }
+    // initialize game client
+    if(player == 1){
+        send(onefd,"p1", PACKET_SIZE, 0);
+        send(twofd, "p2", PACKET_SIZE, 0);
+    }
+    else{
+        send(onefd,"p2", PACKET_SIZE, 0);
+        send(twofd, "p1", PACKET_SIZE, 0);
+    }
 
     do{
-        struct timeval time_out = {10, 0};          // TIMEOUT VALUE!!!
+        struct timeval time_out = {30, 0};          // TIMEOUT VALUE of 30 sec
         fd_set readset;
         FD_ZERO(&readset);
         FD_SET(onefd,&readset);
         FD_SET(twofd,&readset);
-        if(select(128, &readset, NULL, NULL, &time_out) == 0){
+        if(select(128, &readset, NULL, NULL, &time_out) == 0){  // see if any data is ready to be read or timeout
             printf("Timeout\n");
             buf = "t\0";
             send(onefd, buf, PACKET_SIZE, 0);
@@ -124,7 +123,7 @@ void *execute(void *thread_arg){
             recv(twofd, buf, PACKET_SIZE, 0);
             send(onefd, buf, PACKET_SIZE, 0);
         }
-        player = (player == 1)?2:1;
+        player = (player == 1)?2:1; // next player's turn
     }
     while(strcasecmp(&buf[0], "q") != 0);
     printf("gameover\n");
