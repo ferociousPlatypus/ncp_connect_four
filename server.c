@@ -112,8 +112,10 @@ void *execute(void *thread_arg){
         }
         player = (player == 1)?2:1;
     }
-    while(1);        // fix this
+    while(strcasecmp(&buf[0], "q") != 0);        // fix this
 
+    close(onefd);
+    close(twofd);
     return NULL;
 }
 
