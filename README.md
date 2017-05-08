@@ -4,7 +4,7 @@ To Compile:
 >make
   
 To run Server:
->./server
+>./server [port number]
   
 To run client:
 >./client [hostname of server] [port on server]
