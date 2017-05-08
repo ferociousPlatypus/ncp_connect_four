@@ -169,6 +169,9 @@ int main(int argc,char** argv)
 		gameFrame();
     	
     	}while(winner <= 0);
+    	
+		/* send the message line to the server */
+		n = write(clientfd, "q", 1);
     
     }
     //mimicServer("1",clientfd);
