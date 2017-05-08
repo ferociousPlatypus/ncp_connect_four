@@ -73,7 +73,6 @@ void initiate_game(){
 }
 
 int gameFrame(){	
-    printf("Player %i: ", playerMove);
     col  = charCol - '0';
     if( (winner = drop_piece(&test, col, playerMove)) != -1 )
         playerMove = (playerMove == 1)?2:1;
@@ -97,118 +96,126 @@ int main(int argc,char** argv)
     
     //assigning port to 2nd argument 
     int port = atoi(argv[1]);
-    
-    int clientfd = open_clientfd("localhost",port);
-    if(clientfd == -1)
-    {
-        char msg[BUFSIZE];
-        sprintf(msg,"error creating a connection . connecting \n");
-        fprintf(stderr, "%s: %s\n", msg, strerror(errno));
-        exit(0);
-    }
-    if(clientfd == -2)
-    {
-        printf("Invalid hostname");
-        exit(0);
-    }
-    
-    initiate_game();
-    //mimicServer("p2",clientfd);
-    do{
-		bzero(buf, BUFSIZE);
-		n = read(clientfd, buf, BUFSIZE);
-		if (n < 0) {
-			error("ERROR reading from socket");
+
+	do{
+		int clientfd = open_clientfd("localhost",port);
+		if(clientfd == -1)
+		{
+		    char msg[BUFSIZE];
+		    sprintf(msg,"error creating a connection . connecting \n");
+		    fprintf(stderr, "%s: %s\n", msg, strerror(errno));
+		    exit(0);
 		}
-		sleep(5);
-	}while( n == 0);
-	printf("Echo from server: %s\n\n PlayerNumber : %c\n\n", buf,buf[1]);
-	
-
-    
-    if(strncmp(buf,"p1",2) == 0)
-    {
-    	playernumber =1;
-    }
-    else if(strncmp(buf,"p2",2) == 0)
-    {
-    	playernumber = 2;
-    }
-    printf("Your PlayerNumber : %i \n", playernumber);
-    
-    if(playernumber == 1)
-    {
-    	do{
-    	// Send Player Movement to server 
-    	
-    	/* get message line from the user */
-		printf("Please enter player move: ");
-		bzero(buf, BUFSIZE);
-		fgets(buf, BUFSIZE, stdin);
-
-		charCol = buf[0];
-		if(gameFrame() == -1) continue;
-		if(winner > 0) break;
+		if(clientfd == -2)
+		{
+		    printf("Invalid hostname");
+		    exit(0);
+		}
 		
-		/* send the message line to the server */
-		n = write(clientfd, buf, strlen(buf));
-		if (n < 0) 
-		  error("ERROR writing to socket");
-		printf("\n\n Sent to Server : %c \n\n",buf[0]);
-		  
-		  
-		// Get 2nd player movment.  
-    	/* print the server's reply */
-		bzero(buf, BUFSIZE);
-		n = read(clientfd, buf, BUFSIZE);
-		if (n < 0) 
-		  error("ERROR reading from socket");
-		printf("Echo from server: %s\n", buf);
-		
-		charCol = buf[0];
-		gameFrame();
-    	
-    	}while(winner <= 0);
-    	
-		/* send the message line to the server */
-		n = write(clientfd, "q", 1);
-    
-    }
-    //mimicServer("1",clientfd);
-    if ( playernumber == 2)
-    {
-    	do{
+		initiate_game();
+		//mimicServer("p2",clientfd);
+		do{
 			bzero(buf, BUFSIZE);
 			n = read(clientfd, buf, BUFSIZE);
-			if (n < 0) 
-			  error("ERROR reading from socket");
-			printf("Echo from server: %s\n", buf);
+			if (n < 0) {
+				error("ERROR reading from socket");
+			}
+			sleep(5);
+		}while( n == 0);
+		//printf("Echo from server: %s\n\n PlayerNumber : %c\n\n", buf,buf[1]);
+	
+
 		
-			charCol = buf[0];
-			gameFrame();
-			if(winner > 0) break;
-			// Send Player Movement to server
-			 
+		if(strncmp(buf,"p1",2) == 0)
+		{
+			playernumber =1;
+		}
+		else if(strncmp(buf,"p2",2) == 0)
+		{
+			playernumber = 2;
+		}
+		printf("Your PlayerNumber : %i \n", playernumber);
+		
+		if(playernumber == 1)
+		{
+			do{
+			// Send Player Movement to server 
 			
 			/* get message line from the user */
-			do{
-				printf("Please enter player move: ");
-				bzero(buf, BUFSIZE);
-				fgets(buf, BUFSIZE, stdin);
-				charCol = buf[0];
-			
-			}while(gameFrame() == -1);
+			printf("Please enter player move: ");
+			bzero(buf, BUFSIZE);
+			fgets(buf, BUFSIZE, stdin);
+
+			charCol = buf[0];
+			if(gameFrame() == -1) continue;
+
+		
 			/* send the message line to the server */
 			n = write(clientfd, buf, strlen(buf));
 			if (n < 0) 
 			  error("ERROR writing to socket");
-			printf("\n\n Sent to Server : %c \n\n",buf[0]);
+			//printf("\n\n Sent to Server : %c \n\n",buf[0]);
+	 		if(winner > 0) break;
+			  
+			// Get 2nd player movment.  
+			/* print the server's reply */
+			bzero(buf, BUFSIZE);
+			n = read(clientfd, buf, BUFSIZE);
+			if (n < 0) 
+			  error("ERROR reading from socket");
+			//printf("Echo from server: %s\n", buf);
+			printf("\nPlayer Number %c move \n",buf[0]);
+			charCol = buf[0];
+			gameFrame();
 			
-    	}while(winner <= 0);
-    
-    }
-    
-    printf("Winner: Player %i\n", winner);
+			}while(winner <= 0);
+			
+		}
+		//mimicServer("1",clientfd);
+		if ( playernumber == 2)
+		{
+			do{
+				
+				bzero(buf, BUFSIZE);
+				n = read(clientfd, buf, BUFSIZE);
+				if (n < 0) 
+				  error("ERROR reading from socket");
+				//printf("Echo from server: %s\n", buf);
+				printf("\nPlayer Number %c move \n",buf[0]);
+				charCol = buf[0];
+				gameFrame();
+				if(winner > 0) break;
+				// Send Player Movement to server
+				 
+			
+				/* get message line from the user */
+				do{
+					printf("Please enter player move: ");
+					bzero(buf, BUFSIZE);
+					fgets(buf, BUFSIZE, stdin);
+					charCol = buf[0];
+			
+				}while(gameFrame() == -1);
+				/* send the message line to the server */
+				n = write(clientfd, buf, strlen(buf));
+				if (n < 0) 
+				  error("ERROR writing to socket");
+				//printf("\n\n Sent to Server : %c \n\n",buf[0]);
+			
+			}while(winner <= 0);
+		
+		}
+		
+		printf("Winner: Player %i\n", winner);
+		close(clientfd);
+	
+		printf("\n\n\nEnter \'Y\' or \'y\' to start another match \n\n\n");
+		bzero(buf, BUFSIZE);
+		fgets(buf, BUFSIZE, stdin);
+	}while(buf[0] == 'Y' || buf[0] == 'y');
 
+		
+	
+	
     return 0;
 }
