@@ -1,28 +1,18 @@
 CC = gcc
 CFLAGS = -Wall -g
 
-OBJS = connect4.o main.o
+OBJS = server client
 
-
-all: game server main client
+all: game
 
 game: $(OBJS)
-
-connect4.o: connect4.c
-	$(CC) $(CFLAGS) -c connect4.c
-
-main.o: main.c
-	$(CC) $(CFLAGS) -c main.c
 
 server: server.c
 	$(CC) $(CFLAGS) server.c -o server
 	
-client: Test.c
-	$(CC) $(CFLAGS) Test.c connect4.c -o client
-
-main: connect4.c main.c
-	$(CC) $(CFLAGS) $(OBJS) -o run
+client: client.c
+	$(CC) $(CFLAGS) connect4.c client.c -o client
 
 clean:
-	rm -f *~ *.o run server client
+	rm -f *~ *.o server client
 	rm -rf *.dSYM
