@@ -112,7 +112,8 @@ void *execute(void *thread_arg){
         }
         player = (player == 1)?2:1;
     }
-    while(strcasecmp(&buf[0], "q") != 0);        // fix this
+    while(strcasecmp(&buf[0], "q") != 0);
+    printf("gameover\n");
 
     close(onefd);
     close(twofd);
