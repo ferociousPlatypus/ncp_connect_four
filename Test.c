@@ -129,7 +129,7 @@ int main(int argc,char** argv)
 			if (n < 0) {
 				error("ERROR reading from socket");
 			}
-			sleep(5);
+			sleep(1);
 		}while( n == 0);
 		//printf("Echo from server: %s\n\n PlayerNumber : %c\n\n", buf,buf[1]);
 	
@@ -154,6 +154,11 @@ int main(int argc,char** argv)
 			printf("Please enter player move: ");
 			bzero(buf, BUFSIZE);
 			fgets(buf, BUFSIZE, stdin);
+			printf( " Value : %c " , buf[0]);
+			if(buf[0] == 'q'){
+				printf("User Quit\n");
+				break;
+			}
 
 			charCol = buf[0];
 			if(gameFrame() == -1) continue;
@@ -215,9 +220,16 @@ int main(int argc,char** argv)
 					printf("Please enter player move: ");
 					bzero(buf, BUFSIZE);
 					fgets(buf, BUFSIZE, stdin);
+					if(buf[0] == 'q'){
+						printf("User Quit\n");
+						break;
+					}
 					charCol = buf[0];
 			
 				}while(gameFrame() == -1);
+				if(buf[0] == 'q'){
+					break;
+				}
 				/* send the message line to the server */
 				n = write(clientfd, buf, strlen(buf));
 				if (n < 0) 

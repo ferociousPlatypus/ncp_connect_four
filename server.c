@@ -104,7 +104,7 @@ void *execute(void *thread_arg){
         }
 
     do{
-        struct timeval time_out = {10, 0};
+        struct timeval time_out = {10, 0};          // TIMEOUT VALUE!!!
         fd_set readset;
         FD_ZERO(&readset);
         FD_SET(onefd,&readset);
